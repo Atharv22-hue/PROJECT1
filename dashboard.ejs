@@ -1,0 +1,22 @@
+
+<h1>Posts</h1>
+<a href="/add-post" class="button">+ Add New Posts</a>
+<ul class="admin-post" >
+  <% if (locals && locals.length > 0) { %>
+    <% locals.forEach(post => { %>
+      <div>
+        <a href="/post/<%= encodeURIComponent(post._id) %>">
+<%= post.title %> &nearr;     
+    </a> 
+  </div>
+  
+    <% }) %>
+  <% } else { %>
+    <p>No posts available</p>
+  <% } %>
+ 
+  </ul>
+ 
+
+
+  
