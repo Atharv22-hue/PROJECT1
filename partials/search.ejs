@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+      .search-container button {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-left: none;
+    background-color: #ccc;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+}
+.search-container button i {
+            font-size: 16px;
+            color: #555;
+        }
+
+        /* Optional: Add hover effect */
+        .search-container button:hover {
+            background-color: #bbb;
+        }
+
+        .search-container button:active {
+            background-color: #aaa;
+        }
+    </style>
+
+  </head>
+  <div class="searchBar" >
+    <div class=" search-container">
+      <form action="/search" class="d-flex" role="search" method="POST"  >
+        <input  id="searchInput" class="form-control me-2" type="search" placeholder="Search the site.." aria-label="Search" name="searchTerm">
+        <button type="submit"><i class="fas fa-search"></i></button>     
+      </form>
+      
+    </div>
+  </div>
+</body>
+</html>

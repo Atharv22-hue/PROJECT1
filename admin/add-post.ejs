@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <a href="/admin"> back</a>
+   
+  <h1>
+    <center> Add new Posts</center>
+  </h1>  
+
+        <form action="/add-post" method="post">
+            <div class="input-group flex-nowrap">
+                <label for="title">title</label>
+                <input type="text"  class="form-control" name="title" style="width: 500px;" placeholder="Username" aria-label="Username" aria-describedby="addon-wrapping">
+              </div>
+            <br>
+            <div class="mb-3">
+                <label for="body" form="text" class="form-label">Example textarea</label>
+                <textarea class="form-control"   name="body" rows="5"></textarea>
+              </div>
+               
+        <br>
+        <input class="btn btn-primary" style="width: 500px;" type="submit" href="/views/admin/add-post" value="Submit" class="btn" >
+        
+        </form>
+       
+    
+</body>
+</html>
