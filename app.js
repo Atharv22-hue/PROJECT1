@@ -1,44 +1,56 @@
+// server.js
 const express = require("express");
 const mongoose = require("mongoose");
-const feedbackRoutes=require('./src/routes/feedBackRoute')
-
-require("dotenv").config();
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const user2 = require("../backend/models/User");
+const cors = require("cors");
 
 const app = express();
+app.use(cors());
 app.use(express.json());
+
+const JWT_SECRET = "atharv";
 
 // Connect to MongoDB
 
-const PORT = process.env.PORT || 5000;
+mongoose.connect('mongodb+srv://pant:tTEBIp7nEP7de3PE@atharv.09g0rli.mongodb.net/', { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('Connected to MongoDB Atlas'))
+  .catch(err => console.error('Connection error:', err));
 
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
-const cors = require("cors");
-app.use(cors({
-  origin: "http://localhost:3000", // Frontend origin
-  methods: ["GET", "POST", "PUT", "DELETE","PATCH"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-}));
 
-mongoose.connect('mongodb+srv://pant:tTEBIp7nEP7de3PE@atharv.09g0rli.mongodb.net/', {
-  //  useNewUrlParser: true, // REMOVE this line
-//    useUnifiedTopology: true // REMOVE this line
-}).then(() => {
-    console.log('MongoDB connected successfully!');
-}).catch(err => {
-    console.error('MongoDB connection failed:', err);
-});
+// Sign up route
+app.post("/signup", async (req, res) => {
+  const { username, password } = req.body;
 
-// Routes
-app.use('/api/feedback', feedbackRoutes);
+  const hashedPassword = await bcrypt.hash(password, 5);
 
-app.use((req, res) => {
-  res.status(404).json({ error: "Route not found" });
-});
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url}`);
-  next();
+  try {
+    const newUser = await user2.create({
+      username,
+      password: hashedPassword,
+    });
+    res.status(201).json({ message: "User created successfully", user: newUser });
+  } catch (err) {
+    res.status(400).json({ error: "User creation failed" });
+  }
 });
 
-module.exports = app;
+// Login route
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+
+  const user = await user2.findOne({ username });
+  if (!user) return res.status(400).json({ error: "Invalid email or password" });
+
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if (!isPasswordValid) return res.status(400).json({ error: "Invalid email or password" });
+
+  const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "1h" });
+  res.json({ token });
+});
+
+// Start server
+app.listen(5000, () => {
+  console.log("Server running on http://localhost:5000");
+});
