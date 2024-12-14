@@ -1,58 +1,44 @@
-const express=require('express');
-const expressLayout=require('express-ejs-layouts');
-const bodyParser=require('body-parser');
-const methodOverride=require('method-override');
-const mongoose=require('mongoose');
-const {isActive}=require('../to do 2/back/helpers/help');
-const app=express();
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(methodOverride('_method'));
-app.locals.isActive=isActive;
-const cookieparser=require('cookie-parser');
-const session=require('express-session');
-const MongoStore = require('connect-mongo');
+const express = require("express");
+const mongoose = require("mongoose");
+const feedbackRoutes=require('./src/routes/feedBackRoute')
 
-const mongoUrl='mongodb+srv://pant2:awapx7UCOhQn4GBa@atharv.09g0rli.mongodb.net/';
+require("dotenv").config();
 
-app.use(cookieparser());
+const app = express();
+app.use(express.json());
 
+// Connect to MongoDB
 
-app.use(session({
-  secret:'keyboard cat',
-  resave:false,
-  saveUninitialized:true,
-  store:MongoStore.create({
-    mongoUrl:mongoUrl
-  })
-}))
+const PORT = process.env.PORT || 5000;
 
-const path = require('path');
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
+const cors = require("cors");
+app.use(cors({
+  origin: "http://localhost:3000", // Frontend origin
+  methods: ["GET", "POST", "PUT", "DELETE","PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
 
-app.set('views', path.join(__dirname, 'views'));
-
-app.set('view engine','ejs');
-app.use(expressLayout);
-app.set('layout','./layout/layout')
-
-app.use('/',require('./back/routes/main'));
-const date=mongoose.model('date',{date:Number});
-
-
-mongoose.connect(mongoUrl, {
-  
+mongoose.connect('mongodb+srv://pant:tTEBIp7nEP7de3PE@atharv.09g0rli.mongodb.net/', {
+  //  useNewUrlParser: true, // REMOVE this line
+//    useUnifiedTopology: true // REMOVE this line
 }).then(() => {
-  console.log('Connected to MongoDB');
+    console.log('MongoDB connected successfully!');
 }).catch(err => {
-  console.error('Failed to connect to MongoDB', err);
+    console.error('MongoDB connection failed:', err);
 });
 
+// Routes
+app.use('/api/feedback', feedbackRoutes);
 
+app.use((req, res) => {
+  res.status(404).json({ error: "Route not found" });
+});
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
 
-// Use sessions with MongoDB store
-
-
-
-app.listen(4000,(req,res)=>{
-    console.log('running');
-    });
+module.exports = app;
